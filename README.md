@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # TIMES GLOBAL - Datacenter Operations Logbook
 
 A modern, responsive web application for logging and reporting datacenter operations including temperature, humidity, power, and UPS readings.
@@ -244,3 +245,7 @@ ISC
 **Version**: 2.0 | **Last Updated**: March 2026  
 **Developer**: Times Global Team  
 **Support**: Check server console for debugging information
+=======
+# LogBook-
+LogBook for the Networking Company that saves the daily machine values.
+>>>>>>> 8dd9cc2aa451cd91331936695636195b929ea625
