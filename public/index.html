@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TIMES GLOBAL Datacenter Operations Logbook - Track temperature, humidity, power, and UPS readings">
+    <meta name="theme-color" content="#F2F3F5">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <title>TIMES GLOBAL — Datacenter Logbook</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+
+    <!-- ============ HEADER — logo lockup ============ -->
+    <div class="top">
+        <div class="top-inner">
+            <div class="logo-lockup">
+                <img src="/timeslogo.png" alt="Times Global">
+            </div>
+            <div class="duty-clock" aria-label="Current time">
+                <span class="clock-time"><span class="duty-lamp" aria-hidden="true"></span><span id="clock-time">--:--:--</span></span>
+                <span class="clock-date" id="clock-date"></span>
+            </div>
+        </div>
+        <nav class="nav-row" aria-label="Log sections">
+            <a href="#fieldset-round" onclick="quickNav('fieldset-round', event)">Round</a>
+            <a href="#fieldset-power" onclick="quickNav('fieldset-power', event)"><span class="nav-dot" data-nav="power" aria-hidden="true"></span>Power &amp; UPS</a>
+            <a href="#fieldset-pac" onclick="quickNav('fieldset-pac', event)"><span class="nav-dot" data-nav="pac" aria-hidden="true"></span>PAC Units</a>
+            <a href="#fieldset-pdu" onclick="quickNav('fieldset-pdu', event)"><span class="nav-dot" data-nav="pdu" aria-hidden="true"></span>PDU</a>
+            <a href="#fieldset-sensors" onclick="quickNav('fieldset-sensors', event)"><span class="nav-dot" data-nav="sensors" aria-hidden="true"></span>Sensors</a>
+            <a href="#fieldset-submit" onclick="quickNav('fieldset-submit', event)">Submit</a>
+        </nav>
+    </div>
+
+    <main class="page">
+        <form id="logbookForm" novalidate>
+
+            <!-- ============ ROUND ============ -->
+            <fieldset class="sheet open" id="fieldset-round">
+                <legend class="vh">Round</legend>
+                <button type="button" class="sheet-head" aria-expanded="true" aria-controls="content-round" onclick="toggleSection('fieldset-round')">
+                    <span class="sheet-title">Round</span>
+                    <span class="sheet-count" id="round-status">Pick a round</span>
+                    <span class="sheet-caret" aria-hidden="true"></span>
+                </button>
+                <div class="fieldset-content" id="content-round">
+                    <div class="sheet-body">
+                        <div class="round-grid">
+                            <div class="round-date">
+                                <label for="log_date">Log Date</label>
+                                <input type="date" id="log_date" required>
+                            </div>
+                            <div class="round-track" id="time-selector" role="group" aria-label="Round time — seven daily rounds">
+                                <button type="button" class="time-btn" data-time="01:00" style="--t:1"><span class="round-tick">01</span></button>
+                                <button type="button" class="time-btn" data-time="05:00" style="--t:5"><span class="round-tick">05</span></button>
+                                <button type="button" class="time-btn" data-time="07:00" style="--t:7"><span class="round-tick">07</span></button>
+                                <button type="button" class="time-btn" data-time="11:00" style="--t:11"><span class="round-tick">11</span></button>
+                                <button type="button" class="time-btn" data-time="14:00" style="--t:14"><span class="round-tick">14</span></button>
+                                <button type="button" class="time-btn" data-time="18:00" style="--t:18"><span class="round-tick">18</span></button>
+                                <button type="button" class="time-btn" data-time="21:00" style="--t:21"><span class="round-tick">21</span></button>
+                            </div>
+                            <input type="hidden" id="log_time" required>
+                            <p class="round-note">Seven rounds daily · times are 24-hour</p>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- ============ POWER & UPS ============ -->
+            <fieldset class="sheet" id="fieldset-power" data-meter data-nav="power">
+                <legend class="vh">Power and U P S</legend>
+                <button type="button" class="sheet-head" aria-expanded="false" aria-controls="content-power" onclick="toggleSection('fieldset-power')">
+                    <span class="sheet-lamp" aria-hidden="true"></span>
+                    <span class="sheet-title">Power &amp; UPS</span>
+                    <span class="sheet-count"></span>
+                    <span class="sheet-caret" aria-hidden="true"></span>
+                </button>
+                <div class="fieldset-content collapsed" id="content-power">
+                    <div class="sheet-body">
+                        <div class="unit-grid">
+
+                            <div class="unit">
+                                <div class="unit-head"><span class="unit-name">Gen #A</span><span class="unit-tag">DG Set</span></div>
+                                <div class="three-col">
+                                    <div class="f-stack"><span class="f-label">Fuel %</span><div class="input-group"><input type="number" step="any" name="gen_a_fuel" inputmode="decimal"></div></div>
+                                    <div class="f-stack"><span class="f-label">Hours</span><div class="input-group"><input type="number" step="any" name="gen_a_hours" inputmode="decimal"></div></div>
+                                    <div class="f-stack"><span class="f-label">Load</span><div class="input-group"><input type="number" step="any" name="gen_a_load" inputmode="decimal"></div></div>
+                                </div>
+                            </div>
+
+                            <div class="unit">
+                                <div class="unit-head"><span class="unit-name">Gen #B</span><span class="unit-tag">DG Set</span></div>
+                                <div class="three-col">
+                                    <div class="f-stack"><span class="f-label">Fuel %</span><div class="input-group"><input type="number" step="any" name="gen_b_fuel" inputmode="decimal"></div></div>
+                                    <div class="f-stack"><span class="f-label">Hours</span><div class="input-group"><input type="number" step="any" name="gen_b_hours" inputmode="decimal"></div></div>
+                                    <div class="f-stack"><span class="f-label">Load</span><div class="input-group"><input type="number" step="any" name="gen_b_load" inputmode="decimal"></div></div>
+                                </div>
+                            </div>
+
+                            <div class="unit">
+                                <div class="unit-head"><span class="unit-name">Main DB #A</span><span class="unit-tag">Incomer</span></div>
+                                <div class="f-stack">
+                                    <span class="f-label">Current (A)</span>
+                                    <div class="phase-row">
+                                        <div class="phase-cell"><span class="phase-chip phase-r">R</span><div class="input-group"><input type="number" step="any" name="maindb_a_current_r" inputmode="decimal" aria-label="Main DB A current phase R"></div></div>
+                                        <div class="phase-cell"><span class="phase-chip phase-y">Y</span><div class="input-group"><input type="number" step="any" name="maindb_a_current_y" inputmode="decimal" aria-label="Main DB A current phase Y"></div></div>
+                                        <div class="phase-cell"><span class="phase-chip phase-b">B</span><div class="input-group"><input type="number" step="any" name="maindb_a_current_b" inputmode="decimal" aria-label="Main DB A current phase B"></div></div>
+                                    </div>
+                                </div>
+                                <div class="f-stack">
+                                    <span class="f-label">Line Voltage (V)</span>
+                                    <div class="phase-row">
+                                        <div class="phase-cell"><span class="phase-chip phase-pair">R–Y</span><div class="input-group"><input type="number" step="any" name="maindb_a_ry" inputmode="decimal" aria-label="Main DB A line voltage R-Y"></div></div>
+                                        <div class="phase-cell"><span class="phase-chip phase-pair">Y–B</span><div class="input-group"><input type="number" step="any" name="maindb_a_yb" inputmode="decimal" aria-label="Main DB A line voltage Y-B"></div></div>
+                                        <div class="phase-cell"><span class="phase-chip phase-pair">B–R</span><div class="input-group"><input type="number" step="any" name="maindb_a_br" inputmode="decimal" aria-label="Main DB A line voltage B-R"></div></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="unit">
+                                <div class="unit-head"><span class="unit-name">Main DB #B</span><span class="unit-tag">Incomer</span></div>
+                                <div class="f-stack">
+                                    <span class="f-label">Current (A)</span>
+                                    <div class="phase-row">
+                                        <div class="phase-cell"><span class="phase-chip phase-r">R</span><div class="input-group"><input type="number" step="any" name="maindb_b_current_r" inputmode="decimal" aria-label="Main DB B current phase R"></div></div>
+                                        <div class="phase-cell"><span class="phase-chip phase-y">Y</span><div class="input-group"><input type="number" step="any" name="maindb_b_current_y" inputmode="decimal" aria-label="Main DB B current phase Y"></div></div>
+                                        <div class="phase-cell"><span class="phase-chip phase-b">B</span><div class="input-group"><input type="number" step="any" name="maindb_b_current_b" inputmode="decimal" aria-label="Main DB B current phase B"></div></div>
+                                    </div>
+                                </div>
+                                <div class="f-stack">
+                                    <span class="f-label">Line Voltage (V)</span>
+                                    <div class="phase-row">
+                                        <div class="phase-cell"><span class="phase-chip phase-pair">R–Y</span><div class="input-group"><input type="number" step="any" name="maindb_b_ry" inputmode="decimal" aria-label="Main DB B line voltage R-Y"></div></div>
+                                        <div class="phase-cell"><span class="phase-chip phase-pair">Y–B</span><div class="input-group"><input type="number" step="any" name="maindb_b_yb" inputmode="decimal" aria-label="Main DB B line voltage Y-B"></div></div>
+                                        <div class="phase-cell"><span class="phase-chip phase-pair">B–R</span><div class="input-group"><input type="number" step="any" name="maindb_b_br" inputmode="decimal" aria-label="Main DB B line voltage B-R"></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="controls-row" style="margin-top: 20px; margin-bottom: 15px; display: flex; gap: 10px;">
+                            <button type="button" class="btn-history" onclick="adjustCount('ups', 1)">+ Add UPS</button>
+                            <button type="button" class="btn-history" onclick="adjustCount('ups', -1)">- Remove UPS</button>
+                        </div>
+                        <div class="unit-grid" id="ups-container"></div>
+
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- ============ PAC ============ -->
+            <fieldset class="sheet" id="fieldset-pac" data-meter data-nav="pac">
+                <legend class="vh">PAC Units</legend>
+                <button type="button" class="sheet-head" aria-expanded="false" aria-controls="content-pac" onclick="toggleSection('fieldset-pac')">
+                    <span class="sheet-lamp" aria-hidden="true"></span>
+                    <span class="sheet-title">PAC Units</span>
+                    <span class="sheet-count"></span>
+                    <span class="sheet-caret" aria-hidden="true"></span>
+                </button>
+                <div class="fieldset-content collapsed" id="content-pac">
+                    <div class="sheet-body">
+                        <div class="controls-row" style="margin-bottom: 15px; display: flex; gap: 10px;">
+                            <button type="button" class="btn-history" onclick="adjustCount('pac', 1)">+ Add PAC</button>
+                            <button type="button" class="btn-history" onclick="adjustCount('pac', -1)">- Remove PAC</button>
+                        </div>
+                        <div class="unit-grid" id="pac-container"></div>
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- ============ PDU ============ -->
+            <fieldset class="sheet" id="fieldset-pdu" data-meter data-nav="pdu">
+                <legend class="vh">PDU Currents</legend>
+                <button type="button" class="sheet-head" aria-expanded="false" aria-controls="content-pdu" onclick="toggleSection('fieldset-pdu')">
+                    <span class="sheet-lamp" aria-hidden="true"></span>
+                    <span class="sheet-title">PDU Currents</span>
+                    <span class="sheet-count"></span>
+                    <span class="sheet-caret" aria-hidden="true"></span>
+                </button>
+                <div class="fieldset-content collapsed" id="content-pdu">
+                    <div class="sheet-body">
+                        <div class="controls-row" style="margin-bottom: 15px; display: flex; gap: 10px;">
+                            <button type="button" class="btn-history" onclick="adjustCount('rack', 1)">+ Add Rack (Row size)</button>
+                            <button type="button" class="btn-history" onclick="adjustCount('rack', -1)">- Remove Rack</button>
+                        </div>
+                        <div class="rack-tabs" role="tablist" aria-label="Rack row">
+                            <button type="button" class="rack-tab active" data-rack="a" onclick="showRack('a')">A</button>
+                            <button type="button" class="rack-tab" data-rack="b" onclick="showRack('b')">B</button>
+                            <button type="button" class="rack-tab" data-rack="c" onclick="showRack('c')">C</button>
+                            <button type="button" class="rack-tab" data-rack="d" onclick="showRack('d')">D</button>
+                            <button type="button" class="rack-tab" data-rack="e" onclick="showRack('e')">E</button>
+                        </div>
+                        <div id="rack-a-section" class="rack-section"><div id="rack-a-container"></div></div>
+                        <div id="rack-b-section" class="rack-section" style="display:none;"><div id="rack-b-container"></div></div>
+                        <div id="rack-c-section" class="rack-section" style="display:none;"><div id="rack-c-container"></div></div>
+                        <div id="rack-d-section" class="rack-section" style="display:none;"><div id="rack-d-container"></div></div>
+                        <div id="rack-e-section" class="rack-section" style="display:none;"><div id="rack-e-container"></div></div>
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- ============ SENSORS ============ -->
+            <fieldset class="sheet" id="fieldset-sensors" data-meter data-nav="sensors">
+                <legend class="vh">Sensors and Containment</legend>
+                <button type="button" class="sheet-head" aria-expanded="false" aria-controls="content-sensors" onclick="toggleSection('fieldset-sensors')">
+                    <span class="sheet-lamp" aria-hidden="true"></span>
+                    <span class="sheet-title">Sensors &amp; Containment</span>
+                    <span class="sheet-count"></span>
+                    <span class="sheet-caret" aria-hidden="true"></span>
+                </button>
+                <div class="fieldset-content collapsed" id="content-sensors">
+                    <div class="sheet-body">
+                        <div class="controls-row" style="margin-bottom: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                            <button type="button" class="btn-history" onclick="adjustCount('sensor', 1)">+ Add Sensor</button>
+                            <button type="button" class="btn-history" onclick="adjustCount('sensor', -1)">- Remove Sensor</button>
+                            <button type="button" class="btn-history" onclick="adjustCount('containment', 1)">+ Add Containment</button>
+                            <button type="button" class="btn-history" onclick="adjustCount('containment', -1)">- Remove Containment</button>
+                        </div>
+                        <div class="unit-grid three" id="sensor-container"></div>
+                    </div>
+                </div>
+            </fieldset>
+
+            <!-- ============ SUBMISSION ============ -->
+            <fieldset class="sheet" id="fieldset-submit">
+                <legend class="vh">Submission</legend>
+                <button type="button" class="sheet-head" aria-expanded="false" aria-controls="content-submit" onclick="toggleSection('fieldset-submit')">
+                    <span class="sheet-title">Submission</span>
+                    <span class="sheet-caret" aria-hidden="true"></span>
+                </button>
+                <div class="fieldset-content collapsed" id="content-submit">
+                    <div class="sheet-body">
+                        <div class="submission-area">
+                            <span class="f-label" id="reported-label">Reported By</span>
+                            <input type="text" id="reported_person" required aria-labelledby="reported-label" autocomplete="name" placeholder="Duty engineer name">
+                            <div class="action-buttons">
+                                <button type="submit" class="btn-submit">Record Round</button>
+                                <button type="button" class="btn-history" onclick="viewHistory()">View History</button>
+                                <button type="button" class="btn-clear" onclick="document.getElementById('logbookForm').reset(); clearTime(); localStorage.removeItem('logbook_cache');">Clear Form &amp; Saved Data</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+
+        </form>
+    </main>
+
+    <!-- ============ ACTION BAR (mobile primary action) ============ -->
+    <div class="action-bar">
+        <div class="action-bar-inner">
+            <div class="bar-meter" aria-live="polite">
+                <span class="bar-lamp" aria-hidden="true"></span>
+                <span class="bar-count" id="bar-count">0 readings</span>
+            </div>
+            <button type="button" class="bar-submit" onclick="document.getElementById('logbookForm').requestSubmit()">Record Round</button>
+        </div>
+    </div>
+
+    <footer class="page-footer">
+        <span>Times Global · Data Center Operations</span>
+        <span>Seven rounds daily · 01:00 – 21:00</span>
+    </footer>
+
+    <!-- ============ HISTORY ============ -->
+    <div id="historyModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="history-title">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="history-title">Operation History</h2>
+                <button type="button" class="close" aria-label="Close history" onclick="closeHistory()">&times;</button>
+            </div>
+            <div id="history-container"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

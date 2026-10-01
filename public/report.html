@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TIMES GLOBAL Datacenter Operations Report">
+    <meta name="theme-color" content="#F2F3F5">
+    <title>Operation Log Report - TIMES GLOBAL</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <style>
+        /* Corporate report -- inherits tokens from style.css */
+        body { background: var(--bg); padding: 18px 14px; font-family: 'IBM Plex Sans', -apple-system, 'Segoe UI', sans-serif; color: var(--ink); }
+        .report-container { max-width: 760px; margin: 0 auto; }
+        .report-header { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; box-shadow: var(--shadow-s); margin-bottom: 16px; }
+        .report-brand { display: flex; align-items: center; gap: 14px; }
+        .report-brand img { height: 40px; width: auto; }
+        .report-header h1 { margin: 0; font-weight: 600; font-size: 19px; letter-spacing: -0.01em; line-height: 1.2; font-family: 'IBM Plex Sans', sans-serif; }
+        .report-header p { color: var(--ink-soft); margin: 3px 0 0; font-size: 12px; }
+        .report-header .report-stamp { font-family: 'IBM Plex Mono', Consolas, monospace; font-size: 11px; font-weight: 600; color: var(--ink-soft); background: var(--chip); border-radius: 999px; padding: 7px 14px; letter-spacing: 0.06em; text-transform: uppercase; }
+        .report-meta { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius-s); padding: 14px 18px; display: flex; gap: 18px; flex-wrap: wrap; font-family: 'IBM Plex Mono', Consolas, monospace; font-size: 12.5px; color: var(--ink-soft); box-shadow: var(--shadow-s); margin-bottom: 16px; }
+        .report-meta b { color: var(--ink); font-weight: 600; }
+        .report-section { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); margin-top: 14px; padding: 18px 18px 20px; box-shadow: var(--shadow-s); }
+        .report-section h3 { font-weight: 600; font-size: 13px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 14px; display: flex; align-items: center; gap: 10px; font-family: 'IBM Plex Sans', sans-serif; }
+        .report-section h3::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+        .report-table { width: 100%; border-collapse: collapse; }
+        .report-table th, .report-table td { padding: 9px 8px; text-align: left; font-size: 13.5px; border-bottom: 1px solid var(--line); }
+        .report-table tr:last-child th, .report-table tr:last-child td { border-bottom: 0; }
+        .report-table th { font-weight: 600; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-soft); font-family: 'IBM Plex Sans', sans-serif; }
+        .report-table td { font-family: 'IBM Plex Mono', Consolas, monospace; }
+        .report-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+        .report-card { background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--radius-s); padding: 14px; }
+        .report-card h4 { font-weight: 600; font-size: 12.5px; margin: 0 0 10px; color: var(--ink); display: flex; align-items: center; gap: 8px; font-family: 'IBM Plex Sans', sans-serif; }
+        .report-card p { margin: 6px 0; font-size: 13px; display: flex; justify-content: space-between; gap: 10px; }
+        .report-card p strong { font-weight: 500; color: var(--ink-soft); }
+        .report-card p span { font-family: 'IBM Plex Mono', Consolas, monospace; color: var(--ink); }
+        .no-data { color: var(--ink-faint); font-style: italic; }
+        .print-btn { position: fixed; top: 18px; right: 18px; font-family: 'IBM Plex Sans', sans-serif; font-weight: 600; font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase; padding: 12px 20px; background: var(--brand-red); color: #fff; border: 0; border-radius: var(--radius-s); cursor: pointer; box-shadow: 0 2px 4px rgba(170, 7, 10, 0.3); z-index: 10; }
+        .print-btn:active { transform: translateY(1px); }
+        @media (min-width: 700px) {
+            body { padding: 26px 20px; }
+            .report-header { padding: 28px 30px; }
+            .report-brand img { height: 48px; }
+        }
+        @media print {
+            .print-btn { display: none; }
+            body { background: #fff; padding: 0; }
+            .report-header, .report-section, .report-meta, .report-card { box-shadow: none; background: #fff; }
+            .report-card { border: 1px solid #ccc; }
+            .report-section h3::after { background: #ddd; }
+            .report-table th, .report-table td { border-bottom: 1px solid #ddd; }
+        }
+    </style>
+</head>
+<body>
+    <button class="print-btn" onclick="window.print()">Print Report</button>
+    
+    <div class="report-container">
+        <div class="report-header">
+            <div class="report-brand">
+                <img src="/timeslogo.png" alt="Times Global">
+                <div>
+                    <h1>Operation Log Report</h1>
+                    <p>Datacenter Operations</p>
+                </div>
+            </div>
+            <span class="report-stamp">SHIFT RECORD</span>
+        </div>
+
+        <div class="report-meta">
+            <span id="report-date"></span>
+            <span id="report-time"></span>
+            <span id="report-reported"></span>
+        </div>
+
+        <div id="report-content"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const date = params.get('date') || 'N/A';
+            const time = params.get('time') || 'N/A';
+            const reported = params.get('reported') || 'N/A';
+            
+            document.getElementById('report-date').textContent = 'Date: ' + date;
+            document.getElementById('report-time').textContent = 'Time: ' + time;
+            document.getElementById('report-reported').textContent = 'Reported by: ' + reported;
+
+            let logData = {};
+            try {
+                logData = JSON.parse(params.get('data') || '{}');
+            } catch (e) { console.error('Error parsing data:', e); }
+
+            const content = document.getElementById('report-content');
+            let html = '';
+
+            // Generators - filter empty
+            const genData = { A: {}, B: {} };
+            Object.keys(logData).forEach(key => {
+                if (key.startsWith('gen_')) {
+                    const gen = key.match(/gen_([ab])_/i)?.[1]?.toUpperCase();
+                    if (gen) {
+                        if (key.includes('fuel')) genData[gen].fuel = logData[key];
+                        if (key.includes('hours')) genData[gen].hours = logData[key];
+                        if (key.includes('load')) genData[gen].load = logData[key];
+                    }
+                }
+            });
+
+            const gensWithData = Object.keys(genData).filter(g => 
+                genData[g].fuel || genData[g].hours || genData[g].load
+            );
+
+            if (gensWithData.length) {
+                html += '<div class="report-section"><h3>Main Power & UPS (Generators)</h3><div class="content"><div class="report-grid">';
+                Object.keys(genData).forEach(g => {
+                    if (Object.keys(genData[g]).length) {
+                        html += `<div class="report-card"><h4>Gen #${g}</h4>
+                            <p><strong>Fuel %:</strong> ${genData[g].fuel || 'N/A'}</p>
+                            <p><strong>Total Run Hours:</strong> ${genData[g].hours || 'N/A'}</p>
+                            <p><strong>Load (R-Y-B):</strong> ${genData[g].load || 'N/A'}</p></div>`;
+                    }
+                });
+                html += '</div></div></div>';
+            }
+
+            // Main DB Data
+            const mainDbData = {};
+            Object.keys(logData).forEach(key => {
+                if (key.startsWith('maindb_')) {
+                    const match = key.match(/maindb_([ab])_(.+)/);
+                    if (match) {
+                        const db = match[1].toUpperCase();
+                        const field = match[2];
+                        if (!mainDbData[db]) mainDbData[db] = {};
+                        mainDbData[db][field] = logData[key];
+                    }
+                }
+            });
+
+            if (Object.keys(mainDbData).length) {
+                html += '<div class="report-section"><h3>Main Power & UPS (Main DB)</h3><div class="content"><div class="report-grid">';
+                Object.keys(mainDbData).forEach(db => {
+                    if (Object.keys(mainDbData[db]).length) {
+                        html += `<div class="report-card"><h4>Main DB #${db}</h4>
+                            <p><strong>Current Consumption (R):</strong> ${mainDbData[db].current_r || 'N/A'}</p>
+                            <p><strong>Current Consumption (Y):</strong> ${mainDbData[db].current_y || 'N/A'}</p>
+                            <p><strong>Current Consumption (B):</strong> ${mainDbData[db].current_b || 'N/A'}</p>
+                            <p><strong>L-VOLTAGE (R-Y):</strong> ${mainDbData[db].ry || 'N/A'}</p>
+                            <p><strong>L-VOLTAGE (Y-B):</strong> ${mainDbData[db].yb || 'N/A'}</p>
+                            <p><strong>L-VOLTAGE (B-R):</strong> ${mainDbData[db].br || 'N/A'}</p></div>`;
+                    }
+                });
+                html += '</div></div></div>';
+            }
+
+            // UPS Data
+            const upsData = {};
+            Object.keys(logData).forEach(key => {
+                if (key.startsWith('ups_')) {
+                    const match = key.match(/ups_([ab])_(.+)/);
+                    if (match) {
+                        const ups = match[1].toUpperCase();
+                        const field = match[2];
+                        if (!upsData[ups]) upsData[ups] = {};
+                        upsData[ups][field] = logData[key];
+                    }
+                }
+            });
+
+            if (Object.keys(upsData).length) {
+                html += '<div class="report-section"><h3>Main Power & UPS (UPS)</h3><div class="content"><div class="report-grid">';
+                Object.keys(upsData).forEach(ups => {
+                    if (Object.keys(upsData[ups]).length) {
+                        html += `<div class="report-card"><h4>UPS #${ups}</h4>
+                            <p><strong>Voltage-R:</strong> ${upsData[ups].voltage_r || 'N/A'}</p>
+                            <p><strong>Voltage-Y:</strong> ${upsData[ups].voltage_y || 'N/A'}</p>
+                            <p><strong>Voltage-B:</strong> ${upsData[ups].voltage_b || 'N/A'}</p>
+                            <p><strong>Output-R (kVA):</strong> ${upsData[ups].output_r || 'N/A'}</p>
+                            <p><strong>Output-Y (kVA):</strong> ${upsData[ups].output_y || 'N/A'}</p>
+                            <p><strong>Output-B (kVA):</strong> ${upsData[ups].output_b || 'N/A'}</p>
+                            <p><strong>Load-R (Amp):</strong> ${upsData[ups].load_r || 'N/A'}</p>
+                            <p><strong>Load-Y (Amp):</strong> ${upsData[ups].load_y || 'N/A'}</p>
+                            <p><strong>Load-B (Amp):</strong> ${upsData[ups].load_b || 'N/A'}</p></div>`;
+                    }
+                });
+                html += '</div></div></div>';
+            }
+
+            // Filter PAC data - only show entries with values
+            const pacData = {};
+            Object.keys(logData).forEach(key => {
+                if (key.startsWith('pac_')) {
+                    const num = key.match(/pac_(\d+)/)?.[1];
+                    if (num) {
+                        if (!pacData[num]) pacData[num] = {};
+                        if (key.includes('status')) pacData[num].status = logData[key];
+                        if (key.includes('temp')) pacData[num].temp = logData[key];
+                        if (key.includes('humid')) pacData[num].humid = logData[key];
+                    }
+                }
+            });
+
+            const pacWithData = Object.keys(pacData).filter(p => 
+                pacData[p].status || pacData[p].temp || pacData[p].humid
+            );
+
+            if (pacWithData.length) {
+                html += '<div class="report-section"><h3>PAC Readings</h3><div class="content"><div class="report-grid">';
+                pacWithData.sort((a, b) => parseInt(a) - parseInt(b)).forEach(p => {
+                    const status = pacData[p].status || 'ON';
+                    if (status === 'OFF') {
+                        html += `<div class="report-card"><h4>OFF PAC #${p}</h4>
+                            <p><strong>Status:</strong> OFF</p></div>`;
+                    } else {
+                        html += `<div class="report-card"><h4>ON PAC #${p}</h4>
+                            <p><strong>Temperature:</strong> ${pacData[p].temp || 'N/A'}°C</p>
+                            <p><strong>Humidity:</strong> ${pacData[p].humid || 'N/A'}%</p></div>`;
+                    }
+                });
+                html += '</div></div></div>';
+            }
+
+            const pduData = {};
+            const rackUnits = {};
+            Object.keys(logData).forEach(key => {
+                if (key.startsWith('rack_')) {
+                    const match = key.match(/rack_([ABCDE]\d+)_pdu([AB])/i);
+                    if (match) {
+                        const rack = match[1].toUpperCase(), pdu = match[2].toUpperCase();
+                        if (!pduData[rack]) pduData[rack] = {};
+                        pduData[rack][`PDU ${pdu}`] = logData[key];
+                    }
+                    const unitMatch = key.match(/rack_([ABCDE]\d+)_unit/i);
+                    if (unitMatch) {
+                        rackUnits[unitMatch[1].toUpperCase()] = logData[key];
+                    }
+                }
+            });
+
+            // Filter out racks with no actual values
+            const racksWithData = Object.keys(pduData).filter(rack =>
+                pduData[rack]['PDU A'] || pduData[rack]['PDU B']
+            );
+
+            if (racksWithData.length) {
+                // Group by rack letter
+                const rackGroups = { A: [], B: [], C: [], D: [], E: [] };
+                racksWithData.forEach(rack => {
+                    const letter = rack.charAt(0);
+                    rackGroups[letter].push(rack);
+                });
+
+                 Object.keys(rackGroups).forEach(letter => {
+                     if (rackGroups[letter].length) {
+                         html += `<div class="report-section"><h3>Rack ${letter}</h3><div class="content"><table class="report-table"><thead><tr><th>Rack</th><th>PDU A</th><th>PDU B</th></tr></thead><tbody>`;
+                         rackGroups[letter].sort((a, b) => {
+                             const numA = parseInt(a.substring(1));
+                             const numB = parseInt(b.substring(1));
+                             return numA - numB;
+                         }).forEach(r => {
+                             const unitA = rackUnits[r] || '';
+                             const unitB = rackUnits[r] || '';
+                             const valA = pduData[r]['PDU A'] || '';
+                             const valB = pduData[r]['PDU B'] || '';
+                             html += `<tr><td>${r}</td><td>${valA ? valA + ' ' + unitA : '—'}</td><td>${valB ? valB + ' ' + unitB : '—'}</td></tr>`;
+                         });
+                         html += '</tbody></table></div></div>';
+                     }
+                 });
+            }
+
+            // Sensors - filter empty
+            const sensorData = {};
+            Object.keys(logData).forEach(key => {
+                if (key.startsWith('sensor_')) {
+                    const num = key.match(/sensor_(\d+)/)?.[1];
+                    if (num) {
+                        if (!sensorData[num]) sensorData[num] = {};
+                        if (key.includes('temp')) sensorData[num].temp = logData[key];
+                        if (key.includes('humid')) sensorData[num].humid = logData[key];
+                    }
+                }
+            });
+
+            const sensorsWithData = Object.keys(sensorData).filter(s => sensorData[s].temp || sensorData[s].humid);
+
+            if (sensorsWithData.length) {
+                html += '<div class="report-section"><h3>Additional Temperature & Humidity</h3><div class="content"><div class="report-grid">';
+                sensorsWithData.sort((a, b) => parseInt(a) - parseInt(b)).forEach(s => {
+                    html += `<div class="report-card"><h4>Temp & Humidity Sensor #${s}</h4>
+                        <p><strong>Temperature:</strong> ${sensorData[s].temp || 'N/A'}°C</p>
+                        <p><strong>Humidity:</strong> ${sensorData[s].humid || 'N/A'}%</p></div>`;
+                });
+                html += '</div></div></div>';
+            }
+
+            // Containment Temps - filter empty
+            const containmentData = {};
+            Object.keys(logData).forEach(key => {
+                if (key.startsWith('containment_')) {
+                    const num = key.match(/containment_(\d+)/)?.[1];
+                    if (num && logData[key]) {
+                        containmentData[num] = logData[key];
+                    }
+                }
+            });
+
+            const containmentWithData = Object.keys(containmentData);
+
+            if (containmentWithData.length) {
+                html += '<div class="report-section"><h3>Containment Temperatures</h3><div class="content"><div class="report-grid">';
+                Object.keys(containmentData).forEach(c => {
+                    html += `<div class="report-card"><h4>Containment Temp #${c}</h4>
+                        <p><strong>Temperature:</strong> ${containmentData[c] || 'N/A'}°C</p></div>`;
+                });
+                html += '</div></div></div>';
+            }
+
+            content.innerHTML = html || '<p class="no-data">No data available</p>';
+        });
+    </script>
+</body>
+</html>
